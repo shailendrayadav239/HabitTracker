@@ -1,0 +1,7 @@
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<h2>Welcome, @ViewBag.UserName 👋</h2>
+<p>Your habits will show up here.</p>
+<a asp-controller="Login" asp-action="Logout" class="btn btn-outline-danger">Logout</a>
