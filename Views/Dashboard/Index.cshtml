@@ -2,6 +2,79 @@
     ViewData["Title"] = "Dashboard";
 }
 
-<h2>Welcome, @ViewBag.UserName 👋</h2>
-<p>Your habits will show up here.</p>
-<a asp-controller="Login" asp-action="Logout" class="btn btn-outline-danger">Logout</a>
+<div class="dashboard-header">
+    <div>
+        <h2>Welcome, @ViewBag.UserName</h2>
+        <p class="auth-subtitle">Here's how your habits are doing.</p>
+    </div>
+    <div class="dashboard-actions">
+        <button type="button" class="btn btn-primary" id="openAddModalBtn">+ Add Habit</button>
+        <a asp-controller="Login" asp-action="Logout" class="btn btn-outline-danger">Logout</a>
+    </div>
+</div>
+
+<div id="loadingState" class="loading-state">
+    <div class="spinner"></div>
+</div>
+
+<div id="habitList" class="habit-grid d-none"></div>
+
+<div id="emptyState" class="empty-state d-none">
+    <p>No habits yet. Add your first one to start a streak.</p>
+</div>
+
+<!-- Add/Edit Habit Modal -->
+<div class="modal fade" id="habitModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="habitModalTitle">Add a new habit</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="habitId" value="" />
+                <div class="mb-3">
+                    <label class="form-label">Habit name</label>
+                    <input type="text" id="habitName" class="form-control" placeholder="e.g. Drink water" maxlength="100" />
+                    <span id="habitNameError" class="text-danger"></span>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Frequency</label>
+                    <select id="habitFrequency" class="form-control">
+                        <option value="daily">Daily</option>
+                        <option value="weekly">Weekly</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-link" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="saveHabitBtn" class="btn btn-primary">Save Habit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete habit?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-0">This will permanently delete <strong id="deleteHabitName"></strong> and all its history.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-link" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" id="confirmDeleteBtn" class="btn btn-outline-danger">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toastContainer" class="toast-container"></div>
+
+@section Scripts {
+    <script src="~/js/habits.js" asp-append-version="true"></script>
+}
