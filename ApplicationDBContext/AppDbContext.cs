@@ -1,20 +1,26 @@
 using Microsoft.EntityFrameworkCore;
+using HabitTracker.Entities;
 
-namespace HabitTrackerProject.ApplicationDBContext
+namespace HabitTracker.ApplicationDBContext
 {
     public class AppDbContext : DbContext
     {
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options) { }
 
-        // DbSets added as features are built:
-        // public DbSet<Signup> Signups { get; set; }
-        // public DbSet<Habit> Habits { get; set; }
-        // public DbSet<HabitCompletion> HabitCompletions { get; set; }
+        public DbSet<Signup> Signups { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            modelBuilder.Entity<Signup>(entity =>
+            {
+                entity.HasKey(s => s.Id);
+                entity.HasIndex(s => s.Email).IsUnique();
+                entity.Property(s => s.Email).IsRequired();
+                entity.Property(s => s.Password).IsRequired();
+            });
         }
     }
 }

@@ -1,0 +1,66 @@
+@model HabitTracker.ViewModels.SignupViewModel
+@{
+    ViewData["Title"] = "Sign Up";
+}
+
+<div class="auth-wrapper">
+    <div class="auth-card auth-card-wide">
+        <h2>Create your account</h2>
+        <p class="auth-subtitle">Start building habits that stick.</p>
+
+        <form asp-controller="Signup" asp-action="Index" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Name" class="form-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="DOB" class="form-label"></label>
+                    <input asp-for="DOB" class="form-control" type="date" />
+                    <span asp-validation-for="DOB" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Address" class="form-label"></label>
+                    <input asp-for="Address" class="form-control" />
+                    <span asp-validation-for="Address" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Password" class="form-label"></label>
+                    <input asp-for="Password" class="form-control" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="col-md-6 mb-4">
+                    <label asp-for="ConfirmPassword" class="form-label"></label>
+                    <input asp-for="ConfirmPassword" class="form-control" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100 mb-3">Sign Up</button>
+            <div class="text-center">
+                <a asp-controller="Login" asp-action="Index" class="btn btn-link">Already have an account? Login</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

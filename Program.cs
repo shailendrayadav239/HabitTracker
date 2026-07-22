@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using HabitTrackerProject.ApplicationDBContext;
+using HabitTracker.ApplicationDBContext;
 
 var builder = WebApplication.CreateBuilder(args);
 
