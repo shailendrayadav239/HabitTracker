@@ -1,0 +1,28 @@
+@{
+    ViewData["Title"] = ViewBag.HabitName + " – History";
+}
+
+<div class="detail-header">
+    <a asp-controller="Dashboard" asp-action="Index" class="back-link">&larr; Back to Dashboard</a>
+    <h2>@ViewBag.HabitName</h2>
+</div>
+
+<div id="statsGrid" class="stats-grid"></div>
+
+<div class="heatmap-card">
+    <h4>Activity</h4>
+    <div id="heatmap" class="heatmap"></div>
+    <div class="heatmap-legend">
+        <span>Less</span>
+        <div class="legend-dot"></div>
+        <div class="legend-dot completed"></div>
+        <span>More</span>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const HABIT_ID = "@ViewBag.HabitId";
+    </script>
+    <script src="~/js/habitDetail.js" asp-append-version="true"></script>
+}
