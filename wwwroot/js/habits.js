@@ -75,7 +75,6 @@ function renderHabits(habits) {
     const card = document.createElement("div");
     card.className = "habit-card";
     card.dataset.id = habit.id;
-    card.dataset.weekOffset = "0";
     card.innerHTML = buildCardHtml(habit);
     habitList.appendChild(card);
     attachCardListeners(card, habit);
@@ -98,12 +97,6 @@ function buildCardHtml(habit) {
         <div class="streak-badge">
             <span class="streak-number">${habit.streak}</span>
             <span class="streak-label">day streak</span>
-        </div>
-
-        <div class="week-nav">
-            <button class="week-nav-btn prev-week-btn" title="Previous week">&lsaquo;</button>
-            <span class="week-range-label">This week</span>
-            <button class="week-nav-btn next-week-btn" title="Next week" disabled>&rsaquo;</button>
         </div>
 
         <div class="week-strip">
@@ -175,60 +168,6 @@ function attachCardListeners(card, habit) {
       confirmDeleteModal.show();
     }),
   );
-
-  const prevBtn = card.querySelector(".prev-week-btn");
-  const nextBtn = card.querySelector(".next-week-btn");
-
-  prevBtn.addEventListener(
-    "click",
-    withGuard(`week-${id}`, async () => {
-      await navigateWeek(card, id, -1);
-    }),
-  );
-  nextBtn.addEventListener(
-    "click",
-    withGuard(`week-${id}`, async () => {
-      await navigateWeek(card, id, 1);
-    }),
-  );
-}
-
-async function navigateWeek(card, id, direction) {
-  const currentOffset = parseInt(card.dataset.weekOffset, 10);
-  const newOffset = currentOffset + direction;
-  if (newOffset > 0) return;
-
-  const prevBtn = card.querySelector(".prev-week-btn");
-  const nextBtn = card.querySelector(".next-week-btn");
-  prevBtn.disabled = true;
-  nextBtn.disabled = true;
-
-  try {
-    const res = await fetch(`/api/habits/${id}/week?offset=${newOffset}`);
-    if (!res.ok) {
-      showToast("Could not load that week.", "error");
-      return;
-    }
-    const weekData = await res.json();
-    card.dataset.weekOffset = String(newOffset);
-
-    const strip = card.querySelector(".week-strip");
-    strip.innerHTML = weekData.days
-      .map(
-        (d) => `
-            <div class="day-dot ${d.completed ? "completed" : ""}" title="${d.date}">
-                <span>${d.dayLabel}</span>
-            </div>
-        `,
-      )
-      .join("");
-
-    card.querySelector(".week-range-label").textContent =
-      newOffset === 0 ? "This week" : weekData.rangeLabel;
-  } finally {
-    prevBtn.disabled = false;
-    nextBtn.disabled = newOffset >= 0;
-  }
 }
 
 function updateCardStreakAndTick(card, habitDto) {
@@ -243,18 +182,16 @@ function updateCardStreakAndTick(card, habitDto) {
     tickBtn.textContent = "Mark today complete";
   }
 
-  if (card.dataset.weekOffset === "0") {
-    const strip = card.querySelector(".week-strip");
-    strip.innerHTML = habitDto.last7Days
-      .map(
-        (d) => `
-            <div class="day-dot ${d.completed ? "completed" : ""}" title="${d.date}">
-                <span>${d.dayLabel}</span>
-            </div>
-        `,
-      )
-      .join("");
-  }
+  const strip = card.querySelector(".week-strip");
+  strip.innerHTML = habitDto.last7Days
+    .map(
+      (d) => `
+        <div class="day-dot ${d.completed ? "completed" : ""}" title="${d.date}">
+            <span>${d.dayLabel}</span>
+        </div>
+    `,
+    )
+    .join("");
 
   const cached = habitsCache.find((h) => h.id === habitDto.id);
   if (cached) Object.assign(cached, habitDto);

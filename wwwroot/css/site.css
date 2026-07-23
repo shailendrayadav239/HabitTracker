@@ -10,7 +10,8 @@
 }
 
 html {
-  height: 100%;
+  height: auto !important;
+  min-height: 0 !important;
 }
 
 body {
@@ -21,14 +22,16 @@ body {
     -apple-system,
     BlinkMacSystemFont,
     sans-serif;
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
+  height: auto !important;
+  min-height: 0 !important;
+  display: block !important;
   margin: 0;
 }
 
 main {
-  flex: 1 0 auto;
+  display: block !important;
+  min-height: 0 !important;
+  margin-bottom: 2rem;
 }
 
 h1,
@@ -132,11 +135,11 @@ a {
 
 /* Auth layout */
 .auth-wrapper {
-  flex: 1 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 2.5rem 1rem;
+  margin-bottom: 1rem;
 }
 
 .auth-card {
@@ -203,16 +206,22 @@ a {
   font-size: 0.9rem;
 }
 
-/* Footer — fixed: no more absolute positioning */
+/* Footer */
 .footer {
-  position: static;
-  flex-shrink: 0;
+  position: static !important;
+  bottom: auto !important;
+  width: auto !important;
   background-color: transparent;
   border-top: 1px solid var(--line) !important;
-  font-size: 0.85rem;
-  padding: 1.25rem 0;
-  width: 100%;
+  font-size: 0.78rem !important;
+  padding: 0.75rem 0 !important;
+  margin-top: 2.5rem !important;
 }
+
+.footer .container {
+  text-align: center;
+}
+
 /* Dashboard */
 .dashboard-header {
   display: flex;
@@ -364,6 +373,7 @@ a {
   padding: 3rem 1rem;
   opacity: 0.6;
 }
+
 /* Loading / skeleton */
 .loading-state {
   display: flex;
@@ -489,6 +499,7 @@ a {
 .app-toast.error {
   background: #b23b3b;
 }
+
 /* Habit detail page */
 .detail-header {
   margin-bottom: 2rem;
@@ -549,43 +560,11 @@ a {
   border: 1px solid var(--line);
   border-radius: 14px;
   padding: 1.5rem;
-  overflow-x: auto;
 }
 
 .heatmap-card h4 {
   font-size: 1.1rem;
   margin-bottom: 1rem;
-}
-
-.heatmap {
-  display: grid;
-  grid-auto-flow: column;
-  gap: 3px;
-  min-width: 600px;
-}
-
-.heatmap-col {
-  display: grid;
-  grid-template-rows: repeat(7, 1fr);
-  gap: 3px;
-}
-
-.heatmap-cell {
-  width: 12px;
-  height: 12px;
-  border-radius: 3px;
-  background: var(--canvas);
-  border: 1px solid var(--line);
-}
-
-.heatmap-cell.completed {
-  background: var(--sprout);
-  border-color: var(--pine);
-}
-
-.heatmap-cell.empty-cell {
-  background: transparent;
-  border-color: transparent;
 }
 
 .heatmap-legend {
@@ -609,6 +588,7 @@ a {
   background: var(--sprout);
   border-color: var(--pine);
 }
+
 /* Dark mode overrides */
 html[data-theme="dark"] {
   --canvas: #14201a;
@@ -660,6 +640,7 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
   gap: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .account-card {
@@ -687,57 +668,109 @@ body {
   opacity: 0.6;
   cursor: not-allowed;
 }
-/* Footer size fix */
-.footer {
-  padding: 0.75rem 0 !important;
-  font-size: 0.78rem !important;
-  margin-top: 2.5rem;
+/* ============ Dark mode compatibility fixes ============ */
+
+/* Bootstrap modals default to white bg regardless of theme */
+.modal-content {
+  background-color: var(--card);
+  color: var(--ink);
+  border: 1px solid var(--line);
 }
 
-.footer .container {
-  text-align: center;
+.modal-header,
+.modal-footer {
+  border-color: var(--line) !important;
 }
 
-main {
-  margin-bottom: 1rem;
+/* Bootstrap's close (×) button is a dark icon — invisible on dark backgrounds */
+html[data-theme="dark"] .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
 }
 
-.account-grid,
-.auth-wrapper {
-  margin-bottom: 1rem;
-}
-/* Absolute override to permanently kill any legacy absolute footer rule */
-.footer {
-  position: static !important;
-}
-/* Footer hugs content instead of sticking to viewport bottom */
-body {
-  display: block !important;
+/* Bootstrap's text-muted has a fixed gray that ignores theme */
+.text-muted {
+  color: var(--ink) !important;
+  opacity: 0.6;
 }
 
-main {
-  flex: none !important;
-  margin-bottom: 2rem;
-}
-/* FINAL bulletproof footer fix */
-html,
-body {
-  height: auto !important;
-  min-height: 0 !important;
+/* Navbar hamburger icon is dark lines — invisible on dark navbar */
+html[data-theme="dark"] .navbar-toggler-icon {
+  filter: invert(1);
 }
 
-body {
-  display: block !important;
+/* Native date/calendar picker icon stays dark-on-dark otherwise */
+html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
 }
 
-main {
-  display: block !important;
-  min-height: 0 !important;
+/* Bootstrap dropdowns/selects */
+.form-control,
+select.form-control {
+  color: var(--ink);
 }
 
-.footer {
-  position: static !important;
-  bottom: auto !important;
-  width: auto !important;
-  margin-top: 2rem !important;
+/* Heatmap cells — theme-reactive via CSS variables instead of inline JS colors */
+:root {
+  --cell-empty: #eef0ea;
+}
+
+html[data-theme="dark"] {
+  --cell-empty: #24352b;
+}
+
+.heatmap-cell-box {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  border: 1px solid var(--line);
+  background-color: var(--cell-empty);
+}
+
+.heatmap-cell-box.completed {
+  background-color: var(--pine);
+  border-color: var(--pine-dark);
+}
+
+/* Alerts stay readable on dark cards */
+.alert-error {
+  background-color: rgba(178, 59, 59, 0.2);
+}
+/* ============ Dark mode: force text visibility in all input states ============ */
+
+.form-control,
+input.form-control,
+select.form-control,
+textarea.form-control {
+  color: var(--ink) !important;
+}
+
+.form-control::placeholder {
+  color: var(--ink) !important;
+  opacity: 0.4;
+}
+
+/* Disabled inputs — browsers use a hardcoded gray text color by default */
+.form-control:disabled,
+.form-control[readonly] {
+  color: var(--ink) !important;
+  opacity: 0.65;
+  background-color: var(--line) !important;
+  -webkit-text-fill-color: var(--ink) !important;
+}
+
+/* Chrome/Edge autofill forces its own white background + black text — override with a long transition trick */
+.form-control:-webkit-autofill,
+.form-control:-webkit-autofill:hover,
+.form-control:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--ink) !important;
+  -webkit-box-shadow: 0 0 0px 1000px var(--canvas) inset !important;
+  box-shadow: 0 0 0px 1000px var(--canvas) inset !important;
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Date input text + native calendar icon */
+input[type="date"] {
+  color: var(--ink) !important;
+  -webkit-text-fill-color: var(--ink) !important;
 }

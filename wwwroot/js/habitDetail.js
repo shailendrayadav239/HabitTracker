@@ -37,52 +37,53 @@ function renderStats(data) {
     `;
 }
 
+// Formats a Date as local yyyy-MM-dd (avoids UTC/timezone shifting the day)
+function toLocalDateStr(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
 function renderHeatmap(completionDates, createdAt) {
-  const completedSet = new Set(completionDates);
+  const heatmap = document.getElementById("heatmap");
+  if (!heatmap) return;
+
+  heatmap.innerHTML = "";
+  heatmap.style.display = "flex";
+  heatmap.style.flexWrap = "wrap";
+  heatmap.style.gap = "5px";
+  heatmap.style.minHeight = "24px";
+
+  const completedSet = new Set(completionDates || []);
+
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const created = new Date(createdAt + "T00:00:00");
-  const daysSinceCreation = Math.floor((today - created) / 86400000) + 1;
-  const totalWeeks = Math.min(52, Math.ceil(daysSinceCreation / 7) + 1);
+  const [cy, cm, cd] = (createdAt || toLocalDateStr(today))
+    .split("-")
+    .map(Number);
+  const created = new Date(cy, cm - 1, cd);
+  created.setHours(0, 0, 0, 0);
 
-  const endDate = new Date(today);
-  const startDate = new Date(today);
-  startDate.setDate(startDate.getDate() - (totalWeeks * 7 - 1));
-  startDate.setDate(startDate.getDate() - startDate.getDay());
+  const totalDays = Math.max(1, Math.floor((today - created) / 86400000) + 1);
 
-  const heatmap = document.getElementById("heatmap");
-  heatmap.innerHTML = "";
-  heatmap.style.gridTemplateColumns = `repeat(${totalWeeks}, 1fr)`;
+  let cursor = new Date(created);
+  for (let i = 0; i < totalDays; i++) {
+    const dateStr = toLocalDateStr(cursor);
+    const isCompleted = completedSet.has(dateStr);
 
-  const cells = [];
-  let cursor = new Date(startDate);
-  while (cursor <= endDate) {
-    const dateStr = cursor.toISOString().split("T")[0];
-    cells.push({
-      dateStr,
-      completed: completedSet.has(dateStr),
-      isFuture: cursor > today,
-      isBeforeCreation: cursor < created,
-    });
+    const box = document.createElement("div");
+    box.title = dateStr;
+    box.style.width = "22px";
+    box.style.height = "22px";
+    box.style.borderRadius = "4px";
+    box.style.flexShrink = "0";
+    box.style.border = "1px solid #999";
+    box.style.backgroundColor = isCompleted ? "#2B5540" : "#f0f0f0";
+
+    heatmap.appendChild(box);
     cursor.setDate(cursor.getDate() + 1);
-  }
-
-  for (let w = 0; w < totalWeeks; w++) {
-    const col = document.createElement("div");
-    col.className = "heatmap-col";
-    for (let d = 0; d < 7; d++) {
-      const cell = cells[w * 7 + d];
-      const box = document.createElement("div");
-      if (!cell || cell.isFuture || cell.isBeforeCreation) {
-        box.className = "heatmap-cell empty-cell";
-      } else {
-        box.className = `heatmap-cell ${cell.completed ? "completed" : ""}`;
-        box.title = cell.dateStr;
-      }
-      col.appendChild(box);
-    }
-    heatmap.appendChild(col);
   }
 }
 
